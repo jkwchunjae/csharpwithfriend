@@ -22,10 +22,13 @@ namespace DiaryForm
         private void button1_Click(object sender, EventArgs e)
         {
             var date = dateTimePicker1.Value;
-            var text = richTextBox1.Text;
+
             var diary = new DiaryData();
-            diary.Content = text;
-            var jsonText = JsonConvert.SerializeObject(diary);
+            diary.Title = textBox1.Text;
+            diary.Date = date;
+            diary.Content = richTextBox1.Text;
+
+            var jsonText = JsonConvert.SerializeObject(diary, Formatting.Indented);
 
             var path = @"C:\Users\jkwch\Documents\diary\test";
             // var fileName0 = date.ToString("yyyyMMdd") + ".txt"; // 20201114.txt
