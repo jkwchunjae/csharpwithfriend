@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,13 +23,16 @@ namespace DiaryForm
         {
             var date = dateTimePicker1.Value;
             var text = richTextBox1.Text;
+            var diary = new DiaryData();
+            diary.Content = text;
+            var jsonText = JsonConvert.SerializeObject(diary);
 
             var path = @"C:\Users\jkwch\Documents\diary\test";
             // var fileName0 = date.ToString("yyyyMMdd") + ".txt"; // 20201114.txt
-            var fileName = $"{date:yyyyMMdd}.txt"; // 20201114.txt
+            var fileName = $"{date:yyyyMMdd}.json"; // 20201114.json
             var diaryPath = Path.Combine(path, fileName);
 
-            File.WriteAllText(diaryPath, text);
+            File.WriteAllText(diaryPath, jsonText);
         }
     }
 }
