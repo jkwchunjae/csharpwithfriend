@@ -12,22 +12,35 @@ using System.Windows.Forms;
 
 namespace DiaryForm
 {
+    public class TagControlData
+    {
+        public int Index { get; set; }
+        public string TagText { get; set; }
+        public Label Control { get; set; }
+        public Button DeleteButton { get; set; }
+    }
+
     public partial class Form1 : Form
     {
-        private DiaryData diary;
+        private List<TagControlData> _tagData = new List<TagControlData>();
+
         public Form1()
         {
             InitializeComponent();
-            diary = new DiaryData();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             var date = dateTimePicker1.Value;
 
+            var diary = new DiaryData();
             diary.Title = textBox1.Text;
             diary.Date = date;
             diary.Content = richTextBox1.Text;
+            foreach (var tagData in _tagData)
+            {
+                diary.Tags.Add(tagData.TagText);
+            }
 
             var jsonText = JsonConvert.SerializeObject(diary, Formatting.Indented);
 
@@ -43,20 +56,78 @@ namespace DiaryForm
         {
             if (e.KeyCode == Keys.Enter)
             {
-                var y = 338;
+                var tagText = textBox2.Text;
                 var newTagLabel = new Label();
-                newTagLabel.Text = textBox2.Text;
-                newTagLabel.SetBounds(
-                    textBox2.Left,
-                    y,
-                    100,
-                    30);
-                textBox2.Left += 100;
+                newTagLabel.Text = tagText;
 
-                diary.Tags.Add(textBox2.Text);
+                var deleteButton = new Button();
+                deleteButton.Text = "X";
+                deleteButton.Click += (_, __) =>
+                {
+                    try
+                    {
+                        TagControlData removedData = null;
+                        foreach (var tagData in _tagData)
+                        {
+                            if (tagData.Control == newTagLabel)
+                            {
+                                removedData = tagData;
+                            }
+                        }
+                        if (removedData != null)
+                        {
+                            _tagData.Remove(removedData);
+                            Controls.Remove(newTagLabel);
+                            Controls.Remove(deleteButton);
+                            RedrawTagList();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                };
 
+                var tagControlData = new TagControlData
+                {
+                    TagText = tagText,
+                    Control = newTagLabel,
+                    DeleteButton = deleteButton,
+                };
+
+                _tagData.Add(tagControlData);
+
+                this.Controls.Add(deleteButton);
                 this.Controls.Add(newTagLabel);
+
+                RedrawTagList();
+
+                textBox2.Text = "";
             }
+        }
+
+        private void RedrawTagList()
+        {
+            int index = 0;
+            var y = 338;
+
+            foreach (var tagData in _tagData)
+            {
+                tagData.Control.SetBounds(
+                    index * 100 + 12,
+                    y,
+                    70,
+                    30);
+                tagData.DeleteButton.SetBounds(
+                    index * 100 + 12 + 70,
+                    y,
+                    30,
+                    30);
+
+                index++;
+            }
+
+            textBox2.Left = index * 100 + 12;
         }
     }
 }
