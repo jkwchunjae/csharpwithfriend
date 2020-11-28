@@ -37,10 +37,10 @@ namespace DiaryForm
             diary.Title = textBox1.Text;
             diary.Date = date;
             diary.Content = richTextBox1.Text;
-            foreach (var tagData in _tagData)
-            {
-                diary.Tags.Add(tagData.TagText);
-            }
+
+            diary.Tags = _tagData
+                .Select(x => x.TagText)
+                .ToList();
 
             var jsonText = JsonConvert.SerializeObject(diary, Formatting.Indented);
 
@@ -66,14 +66,9 @@ namespace DiaryForm
                 {
                     try
                     {
-                        TagControlData removedData = null;
-                        foreach (var tagData in _tagData)
-                        {
-                            if (tagData.Control == newTagLabel)
-                            {
-                                removedData = tagData;
-                            }
-                        }
+                        var removedData = _tagData
+                            .FirstOrDefault(x => x.Control == newTagLabel);
+
                         if (removedData != null)
                         {
                             _tagData.Remove(removedData);
