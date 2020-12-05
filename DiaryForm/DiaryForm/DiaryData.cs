@@ -12,5 +12,6 @@ namespace DiaryForm
         public string Title;
         public string Content;
         public List<string> Tags = new List<string>();
+        public bool Encrypted;
     }
 }
